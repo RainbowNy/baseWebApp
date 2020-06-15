@@ -2,8 +2,10 @@ package org.base.webapp.controller;
 
 import org.aspectj.bridge.IMessage;
 import org.base.webapp.domain.Message;
+import org.base.webapp.domain.User;
 import org.base.webapp.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +33,8 @@ public class BasePageController {
     }
 
     @PostMapping("/main")
-    public String addMessage(@RequestParam String textToSent, @RequestParam String tag, Model model){
-        Message message = new Message(textToSent,tag);
+    public String addMessage(@AuthenticationPrincipal User user, @RequestParam String textToSent, @RequestParam String tag, Model model){
+        Message message = new Message(textToSent, tag, user);
 
         messageRepository.save(message);
 
