@@ -33,6 +33,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-freemarker
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 }
 
 test {
