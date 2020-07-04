@@ -13,16 +13,29 @@
     <a class="btn btn-primary" data-toggle="collapse" href="#addmessage" role="button" aria-expanded="false" aria-controls="collapseExample">
         Add new message
     </a>
-    <div class="collapse" id="addmessage">
+    <div class="collapse <#if message??>show</#if>" id="addmessage">
         <div class="form-group mt-3">
             <form method="post" enctype="multipart/form-data">
                 <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+
                 <div class="form-group">
-                    <input class="form-control" type="text" name="textToSent" placeholder="Type the message">
+                    <input class="form-control ${(textError??)?string('is-invalid', '')}" value="<#if message??>${message.text}</#if>" type="text" name="text" placeholder="Type the message">
+
+                    <#if textError??>
+                        <div class="invalid-feedback">
+                            ${textError}
+                        </div>
+                    </#if>
                 </div>
 
                 <div class="form-group">
-                    <input class="form-control" type="text" name="tag" placeholder="Tag">
+                    <input class="form-control ${(tagError??)?string('is-invalid', '')}" value="<#if message??>${message.tag}</#if>" type="text" name="tag" placeholder="Tag">
+
+                    <#if tagError??>
+                        <div class="invalid-feedback">
+                            ${tagError}
+                        </div>
+                    </#if>
                 </div>
 
                 <div class="form-group">
@@ -40,23 +53,23 @@
     </div>
 
     <div class="card-columns">
-    <#list messages as message>
-        <div class="card my-3">
-            <#if message.filename??>
-                <img class="card-img-top" src="/img/${message.filename}">
-            </#if>
+        <#list messages as message>
+            <div class="card my-3">
+                <#if message.filename??>
+                    <img class="card-img-top" src="/img/${message.filename}">
+                </#if>
 
-            <div class="m-2">
-                <span>${message.getText()}</span>
-                <i>${message.getTag()}</i>
-            </div>
+                <div class="m-2">
+                    <span>${message.getText()}</span>
+                    <i>${message.getTag()}</i>
+                </div>
 
-            <div class="card-footer text-muted">
-                ${message.getAuthorName()}
+                <div class="card-footer text-muted">
+                    ${message.getAuthorName()}
+                </div>
             </div>
-        </div>
-    <#else>
-        No messages
-    </#list>
+        <#else>
+            No messages
+        </#list>
     </div>
 </@c.page>

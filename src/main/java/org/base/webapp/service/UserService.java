@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -26,9 +27,18 @@ public class UserService implements UserDetailsService {
     @Autowired
     private MailSender mailSender;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
+
+        if(user == null){
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        return user;
     }
 
     public boolean addUser(User user){
@@ -41,6 +51,7 @@ public class UserService implements UserDetailsService {
         user.setActive(true);
         user.setUserRoles(Collections.singleton(Role.USER));
         user.setActivationEmailCode(UUID.randomUUID().toString());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepository.save(user);
 
@@ -58,7 +69,7 @@ public class UserService implements UserDetailsService {
                     user.getUsername(), applicationAddress, user.getActivationEmailCode()
             );
 
-            mailSender.sendEmailMessage(user.getUserEmail(), "Activate your account", message);
+            mailSender.sendEmailMessage(user.getUserEmail(), "Confirm your email at baseApp", message);
         }
     }
 
@@ -83,7 +94,8 @@ public class UserService implements UserDetailsService {
     public void saveUser(User user, String username, Map<String, String> form) {
         user.setUsername(username);
 
-        Set<String> roles = Arrays.stream(Role.values())
+        Set<String> roles = Arrays
+                .stream(Role.values())
                 .map(Role::name)
                 .collect(Collectors.toSet());
 
@@ -101,21 +113,21 @@ public class UserService implements UserDetailsService {
     public void updateProfile(User user, String password, String email) {
         String userEmail = user.getUserEmail();
 
-       boolean isEmailChanged = (email != null && !email.equals(userEmail)) || (userEmail != null && !userEmail.equals(email));
+        boolean isEmailChanged = (email != null && !email.equals(userEmail)) || (userEmail != null && !userEmail.equals(email));
 
-       if(isEmailChanged) {
-           user.setUserEmail(email);
+        if(isEmailChanged) {
+            user.setUserEmail(email);
 
-           if (!StringUtils.isEmpty(email)) {
-               user.setActivationEmailCode(UUID.randomUUID().toString());
-               sendActivationMessage(user);
-           }
-       }
+            if (!StringUtils.isEmpty(email)) {
+                user.setActivationEmailCode(UUID.randomUUID().toString());
+                sendActivationMessage(user);
+            }
+        }
 
-       if(!StringUtils.isEmpty(password)){
-           user.setPassword(password);
-       }
+        if(!StringUtils.isEmpty(password)){
+            user.setPassword(passwordEncoder.encode(password));
+        }
 
-       userRepository.save(user);
+        userRepository.save(user);
     }
 }
