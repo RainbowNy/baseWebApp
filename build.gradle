@@ -39,6 +39,10 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
     compile group: 'org.flywaydb', name: 'flyway-core'
+
+    // https://mvnrepository.com/artifact/org.springframework.session/spring-session-jdbc
+    compile group: 'org.springframework.session', name: 'spring-session-jdbc'
+
 }
 
 test {
