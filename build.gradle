@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.2.2.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
 }
 
 group 'org.base.webapp'
@@ -42,9 +43,20 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.springframework.session/spring-session-jdbc
     compile group: 'org.springframework.session', name: 'spring-session-jdbc'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
 }
 
 test {
     useJUnitPlatform()
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
